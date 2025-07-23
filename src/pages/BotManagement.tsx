@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bot } from '../types';
 import { Bot as BotIcon, Edit, Trash2, Plus, X, Power, PowerOff } from 'lucide-react';
+import FloatingAICommand from '../components/FloatingAICommand';
 
 interface BotManagementProps {
   bots: Bot[];
@@ -10,16 +11,27 @@ interface BotManagementProps {
   showToast: (type: 'success' | 'error' | 'warning', message: string) => void;
   showConfirm: (title: string, message: string, onConfirm: () => void) => void;
   prefilledForm?: Partial<Bot>;
+  // AI Command props (optional)
+  commands?: any[];
+  onAddCommand?: (command: any) => void;
+  onNavigate?: (page: string) => void;
+  onAddUser?: (user: any) => void;
+  onCreateBot?: (bot: any) => void;
 }
 
-export default function BotManagement({ 
-  bots, 
-  onAddBot, 
-  onEditBot, 
-  onDeleteBot, 
-  showToast, 
+export default function BotManagement({
+  bots,
+  onAddBot,
+  onEditBot,
+  onDeleteBot,
+  showToast,
   showConfirm,
-  prefilledForm 
+  prefilledForm,
+  commands = [],
+  onAddCommand = () => {},
+  onNavigate = () => {},
+  onAddUser = () => {},
+  onCreateBot = () => {},
 }: BotManagementProps) {
   const [showForm, setShowForm] = useState(false);
   const [editingBot, setEditingBot] = useState<Bot | null>(null);
@@ -113,8 +125,31 @@ export default function BotManagement({
     showToast('success', `Bot ${bot.isActive ? 'deactivated' : 'activated'} successfully`);
   };
 
+  // Form filling function for AI assistant
+  const handleFillForm = (fields: any) => {
+    setFormData(prev => ({
+      ...prev,
+      name: fields.name || prev.name,
+      description: fields.description || prev.description,
+      type: fields.type || prev.type,
+      selectionCriteria: fields.selectionCriteria || prev.selectionCriteria,
+      isActive: fields.isActive !== undefined ? fields.isActive : prev.isActive,
+    }));
+    if (!showForm) setShowForm(true);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Floating AI Command */}
+      <FloatingAICommand
+        onAddCommand={onAddCommand}
+        onNavigate={onNavigate}
+        onAddUser={onAddUser}
+        onCreateBot={onCreateBot}
+        showToast={showToast}
+        currentPage="bots"
+        formContext={{ type: 'bot', onFillForm: handleFillForm, availableFields: ['name', 'description', 'type', 'selectionCriteria', 'isActive'] }}
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Bot Management</h1>

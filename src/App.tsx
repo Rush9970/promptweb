@@ -8,6 +8,7 @@ import { validateEnvironment } from './config/environment';
 import Sidebar from './components/Sidebar';
 import Toast from './components/Toast';
 import ConfirmDialog from './components/ConfirmDialog';
+import FloatingAICommand from './components/FloatingAICommand';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -275,6 +276,16 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Floating AI Command Center - global */}
+      <FloatingAICommand
+        onAddCommand={handleAddCommand}
+        onNavigate={handleNavigate}
+        onAddUser={handleAddUserFromCommand}
+        onCreateBot={handleCreateBotFromCommand}
+        showToast={showToast}
+        currentPage={currentPage}
+      />
 
       {/* Toast notifications */}
       {toast.show && (
